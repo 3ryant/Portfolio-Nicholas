@@ -1,0 +1,38 @@
+[
+  {
+    "id": "automotive-b-roll",
+    "title": "Automotive B-Roll",
+    "description": "Cinematic cuts dan transisi dinamis.",
+    "videoUrl": "mobil.mp4",
+    "orientation": "landscape",
+    "column": 1,
+    "order": 1
+  },
+  {
+    "id": "fashion-walk-ootd",
+    "title": "Fashion Walk / OOTD",
+    "description": "Video transisi mulus fashion dengan beat lagu.",
+    "videoUrl": "ravichi nicho.mp4",
+    "orientation": "landscape",
+    "column": 1,
+    "order": 2
+  },
+  {
+    "id": "food-beverage-bts",
+    "title": "Food & Beverage BTS",
+    "description": "Editing konten di balik layar.",
+    "videoUrl": "Video btc Nicho.mp4",
+    "orientation": "portrait",
+    "column": 2,
+    "order": 3
+  },
+  {
+    "id": "beauty-video",
+    "title": "Beauty Video",
+    "description": "Produk kecantikan.",
+    "videoUrl": "Video Beauty charm Nicho.mp4",
+    "orientation": "portrait",
+    "column": 3,
+    "order": 4
+  }
+]

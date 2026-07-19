@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Admin — Nicholas Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #050d1a;
+      --bg2: #0c1c30;
+      --panel: rgba(13, 28, 48, 0.85);
+      --line: rgba(255,255,255,0.08);
+      --text: #f0f6ff;
+      --muted: #7a93b0;
+      --accent: #4fc3f7;
+      --accent-glow: rgba(79,195,247,0.18);
+      --danger: #ff6b7a;
+      --danger-bg: rgba(255,107,122,0.1);
+      --success: #56e0a0;
+      --success-bg: rgba(86,224,160,0.1);
+      --warn: #ffd36b;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { min-height: 100%; font-size: 16px; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: radial-gradient(ellipse at 10% 0%, rgba(79,195,247,0.12) 0%, transparent 55%),
+                  radial-gradient(ellipse at 90% 100%, rgba(83,102,255,0.1) 0%, transparent 50%),
+                  linear-gradient(160deg, #040c18 0%, #0d2038 50%, #050d1a 100%);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+    button, input, textarea, select { font: inherit; }
+    button { cursor: pointer; }
+    a { color: var(--accent); text-decoration: none; }
+
+    /* ── Shell ── */
+    .shell { width: min(1100px, calc(100% - 40px)); margin: 0 auto; padding: 36px 0 80px; }
+
+    /* ── Top bar ── */
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 16px; margin-bottom: 40px;
+      padding-bottom: 24px; border-bottom: 1px solid var(--line);
+    }
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .brand-icon {
+      width: 44px; height: 44px; border-radius: 14px;
+      background: linear-gradient(135deg, #a8e6ff, var(--accent));
+      display: grid; place-items: center;
+      font-size: 20px; box-shadow: 0 0 24px var(--accent-glow);
+    }
+    .brand h1 { font-size: 1rem; font-weight: 700; letter-spacing: 0.02em; }
+    .brand p { color: var(--muted); font-size: 0.75rem; margin-top: 2px; }
+    .topbar-right { display: flex; gap: 10px; align-items: center; }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 0 16px; height: 40px; border-radius: 10px;
+      border: 1px solid var(--line); background: rgba(255,255,255,0.04);
+      color: var(--text); font-weight: 600; font-size: 0.85rem;
+      transition: all 0.18s ease; white-space: nowrap;
+    }
+    .btn:hover { border-color: rgba(79,195,247,0.4); background: var(--accent-glow); transform: translateY(-1px); }
+    .btn-primary {
+      border-color: transparent; color: #03111c;
+      background: linear-gradient(135deg, #9be3ff, var(--accent));
+    }
+    .btn-primary:hover { background: linear-gradient(135deg, #b8ecff, #67cdf7); }
+    .btn-danger { border-color: rgba(255,107,122,0.3); color: var(--danger); background: var(--danger-bg); }
+    .btn-danger:hover { border-color: var(--danger); background: rgba(255,107,122,0.18); }
+    .btn-sm { height: 34px; padding: 0 12px; font-size: 0.8rem; }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+    /* ── Token Screen ── */
+    #screen-token {
+      min-height: 80vh; display: flex; align-items: center; justify-content: center;
+    }
+    .token-card {
+      width: min(520px, 100%); padding: 40px;
+      background: var(--panel); border: 1px solid var(--line);
+      border-radius: 24px; backdrop-filter: blur(20px);
+      box-shadow: 0 32px 80px rgba(0,0,0,0.4);
+    }
+    .token-card .icon { font-size: 2.4rem; margin-bottom: 16px; }
+    .token-card h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 8px; }
+    .token-card p { color: var(--muted); font-size: 0.9rem; margin-bottom: 24px; line-height: 1.7; }
+    .token-card a { color: var(--accent); }
+    .steps { background: rgba(79,195,247,0.06); border: 1px solid rgba(79,195,247,0.15);
+      border-radius: 12px; padding: 16px 20px; margin-bottom: 24px; font-size: 0.85rem; }
+    .steps ol { padding-left: 20px; color: var(--muted); display: flex; flex-direction: column; gap: 6px; }
+    .steps strong { color: var(--accent); }
+    .form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+    .form-group label { font-size: 0.82rem; font-weight: 600; color: var(--muted); letter-spacing: 0.05em; text-transform: uppercase; }
+    .form-control {
+      background: rgba(255,255,255,0.04); border: 1px solid var(--line);
+      border-radius: 10px; padding: 10px 14px; color: var(--text);
+      font-size: 0.9rem; transition: border-color 0.2s;
+      width: 100%;
+    }
+    .form-control:focus { outline: none; border-color: var(--accent); background: rgba(79,195,247,0.05); }
+    .form-control::placeholder { color: var(--muted); }
+    #token-error { color: var(--danger); font-size: 0.83rem; display: none; margin-top: 6px; }
+
+    /* ── Dashboard ── */
+    #screen-dashboard { display: none; }
+    .section-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 24px; gap: 16px; flex-wrap: wrap;
+    }
+    .section-head h2 { font-size: 1.3rem; font-weight: 800; }
+    .section-head p { color: var(--muted); font-size: 0.85rem; margin-top: 4px; }
+    .pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 12px; border-radius: 99px; font-size: 0.78rem; font-weight: 600;
+      background: rgba(255,255,255,0.05); border: 1px solid var(--line); color: var(--muted);
+    }
+    .pill-accent { background: var(--accent-glow); border-color: rgba(79,195,247,0.3); color: var(--accent); }
+
+    /* ── Alert banner ── */
+    .alert {
+      display: none; align-items: center; gap: 12px;
+      padding: 14px 18px; border-radius: 12px;
+      font-size: 0.88rem; font-weight: 500; margin-bottom: 24px;
+    }
+    .alert-success { background: var(--success-bg); border: 1px solid rgba(86,224,160,0.3); color: var(--success); }
+    .alert-error   { background: var(--danger-bg);  border: 1px solid rgba(255,107,122,0.3); color: var(--danger); }
+    .alert.show { display: flex; }
+
+    /* ── Project Cards Grid ── */
+    #projects-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+    }
+    .project-card {
+      background: var(--panel); border: 1px solid var(--line);
+      border-radius: 18px; overflow: hidden;
+      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+      backdrop-filter: blur(12px);
+    }
+    .project-card:hover { border-color: rgba(79,195,247,0.3); transform: translateY(-3px); box-shadow: 0 16px 40px rgba(0,0,0,0.3); }
+    .card-video-wrap {
+      position: relative; background: #060f1c; overflow: hidden;
+      aspect-ratio: 16/9;
+    }
+    .card-video-wrap.portrait { aspect-ratio: 9/16; max-height: 200px; }
+    .card-video-wrap video { width: 100%; height: 100%; object-fit: cover; display: block; opacity: 0.7; }
+    .card-video-wrap .badge {
+      position: absolute; top: 10px; left: 10px;
+      background: rgba(0,0,0,0.7); border-radius: 6px; padding: 2px 8px;
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; color: var(--muted);
+      backdrop-filter: blur(4px);
+    }
+    .card-body { padding: 18px; }
+    .card-meta { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+    .card-body h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; color: var(--text); }
+    .card-body p { font-size: 0.83rem; color: var(--muted); line-height: 1.55; margin-bottom: 14px; }
+    .card-actions { display: flex; gap: 8px; }
+    .card-order { color: var(--muted); font-size: 0.75rem; display: flex; align-items: center; gap: 4px; }
+
+    /* Empty state */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center; padding: 60px 20px;
+      color: var(--muted); font-size: 0.9rem;
+    }
+    .empty-state .icon { font-size: 2.5rem; margin-bottom: 12px; }
+
+    /* Loading state */
+    .loading-state {
+      grid-column: 1 / -1; text-align: center;
+      padding: 60px; color: var(--muted);
+    }
+    .spinner {
+      width: 36px; height: 36px; margin: 0 auto 14px;
+      border: 3px solid rgba(79,195,247,0.15);
+      border-top-color: var(--accent);
+      border-radius: 50%; animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Modal ── */
+    .modal-backdrop {
+      display: none; position: fixed; inset: 0; z-index: 999;
+      background: rgba(2,8,18,0.75); backdrop-filter: blur(6px);
+      align-items: center; justify-content: center; padding: 20px;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal {
+      background: linear-gradient(145deg, #0d1f35, #071525);
+      border: 1px solid rgba(79,195,247,0.2);
+      border-radius: 22px; width: min(560px, 100%);
+      max-height: 90vh; overflow-y: auto;
+      box-shadow: 0 40px 100px rgba(0,0,0,0.55);
+      animation: modalIn 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes modalIn { from { opacity: 0; transform: scale(0.92) translateY(12px); } }
+    .modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 22px 24px 0; margin-bottom: 4px;
+    }
+    .modal-header h3 { font-size: 1.15rem; font-weight: 800; }
+    .modal-close {
+      width: 34px; height: 34px; border-radius: 8px;
+      background: rgba(255,255,255,0.05); border: 1px solid var(--line);
+      color: var(--muted); font-size: 1.1rem;
+      display: grid; place-items: center; transition: all 0.15s;
+    }
+    .modal-close:hover { background: var(--danger-bg); color: var(--danger); border-color: rgba(255,107,122,0.3); }
+    .modal-body { padding: 20px 24px 24px; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-group textarea.form-control { resize: vertical; min-height: 80px; }
+    .form-group small { color: var(--muted); font-size: 0.77rem; }
+    .radio-group { display: flex; gap: 10px; }
+    .radio-label {
+      flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 10px; border: 1px solid var(--line); border-radius: 10px;
+      background: rgba(255,255,255,0.03); cursor: pointer; font-size: 0.88rem;
+      transition: all 0.15s;
+    }
+    .radio-label:has(input:checked) {
+      border-color: var(--accent); background: var(--accent-glow); color: var(--accent);
+    }
+    .radio-label input { display: none; }
+    .modal-footer {
+      display: flex; gap: 10px; justify-content: flex-end;
+      padding: 0 24px 24px;
+    }
+
+    /* Delete modal */
+    .delete-modal .modal-body { text-align: center; padding: 30px 28px; }
+    .delete-modal .del-icon { font-size: 2.5rem; margin-bottom: 14px; }
+    .delete-modal h3 { font-size: 1.15rem; font-weight: 800; margin-bottom: 8px; }
+    .delete-modal p { color: var(--muted); font-size: 0.88rem; }
+    .delete-modal .modal-footer { justify-content: center; padding: 0 28px 28px; }
+
+    /* Saving overlay */
+    .saving-overlay {
+      display: none; position: fixed; inset: 0; z-index: 1999;
+      background: rgba(2,8,18,0.88); backdrop-filter: blur(8px);
+      flex-direction: column; align-items: center; justify-content: center;
+      gap: 18px; color: var(--text); font-size: 1rem; font-weight: 600;
+    }
+    .saving-overlay.show { display: flex; }
+    .saving-overlay .spinner { width: 48px; height: 48px; border-width: 4px; margin: 0; }
+    .saving-overlay p { color: var(--muted); font-size: 0.85rem; font-weight: 400; }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .form-row { grid-template-columns: 1fr; }
+      .topbar { flex-wrap: wrap; }
+      .token-card { padding: 28px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════ TOKEN SETUP SCREEN ═══════════════════════════════ -->
+<div class="shell">
+  <div id="screen-token">
+    <div class="token-card">
+      <div class="icon">🔑</div>
+      <h2>Setup Admin</h2>
+      <p>
+        Untuk mengedit project tanpa server, admin panel ini menggunakan <strong>GitHub API</strong>
+        dengan Personal Access Token. Token hanya tersimpan di browser kamu — tidak dikirim ke mana pun.
+      </p>
+
+      <div class="steps">
+        <ol>
+          <li>Buka <a href="https://github.com/settings/tokens/new?scopes=repo&description=Portfolio+Admin" target="_blank"><strong>github.com/settings/tokens/new</strong></a></li>
+          <li>Centang scope <strong>repo</strong> → Scroll bawah → <strong>Generate token</strong></li>
+          <li>Salin token yang muncul (hanya muncul sekali!)</li>
+          <li>Paste di bawah ini</li>
+        </ol>
+      </div>
+
+      <div class="form-group">
+        <label>GitHub Personal Access Token</label>
+        <input type="password" id="token-input" class="form-control" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+        <div id="token-error">❌ Token tidak valid atau tidak punya akses ke repo ini. Coba lagi.</div>
+      </div>
+
+      <button class="btn btn-primary" id="btn-verify" style="width:100%;justify-content:center;height:46px;">
+        ✓ Verifikasi &amp; Masuk
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ DASHBOARD ═══════════════════════════════ -->
+  <div id="screen-dashboard">
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-icon">🎬</div>
+        <div>
+          <h1>Project Admin</h1>
+          <p>Nicholas Bryant Portfolio</p>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <a href="/" class="btn btn-sm">↗ Lihat Portfolio</a>
+        <button class="btn btn-sm" id="btn-logout">🔓 Logout</button>
+      </div>
+    </div>
+
+    <!-- Alert -->
+    <div class="alert alert-success" id="alert-success">
+      <span>✅</span>
+      <span id="alert-success-text"></span>
+    </div>
+    <div class="alert alert-error" id="alert-error">
+      <span>❌</span>
+      <span id="alert-error-text"></span>
+    </div>
+
+    <div class="section-head">
+      <div>
+        <h2>Recap Project</h2>
+        <p>Perubahan otomatis tampil di portfolio setelah Vercel redeploy (~30 detik)</p>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <span class="pill pill-accent" id="project-count-pill">📁 0 project</span>
+        <button class="btn btn-primary" id="btn-add">+ Tambah Project</button>
+      </div>
+    </div>
+
+    <!-- Projects Grid -->
+    <div id="projects-list">
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Memuat project...</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ ADD / EDIT MODAL ═══════════════════════════════ -->
+<div class="modal-backdrop" id="modal-project">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-title">Tambah Project</h3>
+      <button class="modal-close" id="btn-modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="edit-id">
+      <div class="form-group">
+        <label>Judul Project *</label>
+        <input type="text" id="field-title" class="form-control" placeholder="Contoh: Automotive B-Roll" maxlength="100">
+      </div>
+      <div class="form-group">
+        <label>Deskripsi *</label>
+        <textarea id="field-desc" class="form-control" placeholder="Deskripsi singkat project..." maxlength="350" rows="3"></textarea>
+      </div>
+      <div class="form-group">
+        <label>URL Video *</label>
+        <input type="text" id="field-video" class="form-control" placeholder="mobil.mp4  atau  https://...">
+        <small>Nama file video (jika ada di repo yang sama) atau URL lengkap</small>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Orientasi</label>
+          <div class="radio-group">
+            <label class="radio-label">
+              <input type="radio" name="orientation" value="landscape" checked>
+              🖥 Landscape
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="orientation" value="portrait">
+              📱 Portrait
+            </label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Kolom (1–3)</label>
+          <select id="field-column" class="form-control">
+            <option value="1">Kolom 1 (kiri)</option>
+            <option value="2">Kolom 2 (tengah)</option>
+            <option value="3">Kolom 3 (kanan)</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Urutan Tampil</label>
+        <input type="number" id="field-order" class="form-control" placeholder="1" min="1" max="999">
+        <small>Angka lebih kecil tampil lebih dulu</small>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" id="btn-cancel-edit">Batal</button>
+      <button class="btn btn-primary" id="btn-save-project">💾 Simpan &amp; Publish</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ DELETE CONFIRM MODAL ═══════════════════════════════ -->
+<div class="modal-backdrop" id="modal-delete">
+  <div class="modal delete-modal" style="width:min(420px,100%)">
+    <div class="modal-body">
+      <div class="del-icon">🗑️</div>
+      <h3>Hapus Project?</h3>
+      <p id="delete-project-name" style="color:var(--text);font-weight:600;margin-top:8px;"></p>
+      <p style="margin-top:6px;">Project ini akan dihapus permanen dari portfolio.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" id="btn-cancel-delete">Batal</button>
+      <button class="btn btn-danger" id="btn-confirm-delete">Hapus Sekarang</button>
+    </div>
+  </div>
+</div>
+
+<!-- Saving Overlay -->
+<div class="saving-overlay" id="saving-overlay">
+  <div class="spinner"></div>
+  <strong>Menyimpan ke GitHub...</strong>
+  <p>Vercel akan otomatis redeploy dalam ~30 detik</p>
+</div>
+
+<script>
+  'use strict';
+
+  // ────────────────────────────────────────────────────────────────────────────
+  // CONFIG — Sesuaikan jika repo berbeda
+  // ────────────────────────────────────────────────────────────────────────────
+  const REPO      = '3ryant/Portfolio-Nicholas';
+  const FILE_PATH = 'projects.json';   // path dari root repo
+  const BRANCH    = 'main';            // ganti ke 'master' jika perlu
+  const API_BASE  = 'https://api.github.com';
+  const TOKEN_KEY = 'nbw_gh_token';    // localStorage key
+
+  // ────────────────────────────────────────────────────────────────────────────
+  // State
+  // ────────────────────────────────────────────────────────────────────────────
+  let ghToken    = '';
+  let projects   = [];
+  let fileSHA    = '';          // SHA dari file saat ini (dibutuhkan untuk update)
+  let editingId  = null;        // null = tambah baru
+  let deleteId   = null;
+
+  // ────────────────────────────────────────────────────────────────────────────
+  // DOM refs
+  // ────────────────────────────────────────────────────────────────────────────
+  const screenToken    = document.getElementById('screen-token');
+  const screenDash     = document.getElementById('screen-dashboard');
+  const tokenInput     = document.getElementById('token-input');
+  const tokenError     = document.getElementById('token-error');
+  const btnVerify      = document.getElementById('btn-verify');
+  const btnLogout      = document.getElementById('btn-logout');
+  const btnAdd         = document.getElementById('btn-add');
+  const projectsList   = document.getElementById('projects-list');
+  const countPill      = document.getElementById('project-count-pill');
+  const alertSuccess   = document.getElementById('alert-success');
+  const alertError     = document.getElementById('alert-error');
+  const alertSuccessT  = document.getElementById('alert-success-text');
+  const alertErrorT    = document.getElementById('alert-error-text');
+  const savingOverlay  = document.getElementById('saving-overlay');
+
+  const modalProject   = document.getElementById('modal-project');
+  const modalTitle     = document.getElementById('modal-title');
+  const fieldTitle     = document.getElementById('field-title');
+  const fieldDesc      = document.getElementById('field-desc');
+  const fieldVideo     = document.getElementById('field-video');
+  const fieldColumn    = document.getElementById('field-column');
+  const fieldOrder     = document.getElementById('field-order');
+  const editId         = document.getElementById('edit-id');
+  const btnSaveProject = document.getElementById('btn-save-project');
+  const btnCancelEdit  = document.getElementById('btn-cancel-edit');
+  const btnModalClose  = document.getElementById('btn-modal-close');
+
+  const modalDelete    = document.getElementById('modal-delete');
+  const deleteNameEl   = document.getElementById('delete-project-name');
+  const btnCancelDel   = document.getElementById('btn-cancel-delete');
+  const btnConfirmDel  = document.getElementById('btn-confirm-delete');
+
+  // ────────────────────────────────────────────────────────────────────────────
+  // GitHub API helpers
+  // ────────────────────────────────────────────────────────────────────────────
+  async function ghFetch(path, options = {}) {
+    const res = await fetch(`${API_BASE}${path}`, {
+      ...options,
+      headers: {
+        'Authorization': `token ${ghToken}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json',
+        ...(options.headers || {})
+      }
+    });
+    return res;
+  }
+
+  async function loadFile() {
+    const res = await ghFetch(`/repos/${REPO}/contents/${FILE_PATH}?ref=${BRANCH}`);
+    if (!res.ok) throw new Error(`GitHub API ${res.status}`);
+    const data = await res.json();
+    fileSHA = data.sha;
+    const content = JSON.parse(atob(data.content.replace(/\n/g, '')));
+    return content;
+  }
+
+  async function saveFile(newProjects, message) {
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(newProjects, null, 2) + '\n')));
+    const body = { message, content, branch: BRANCH, sha: fileSHA };
+    const res = await ghFetch(`/repos/${REPO}/contents/${FILE_PATH}`, {
+      method: 'PUT',
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.message || `GitHub API ${res.status}`);
+    }
+    const data = await res.json();
+    fileSHA = data.content.sha;   // update SHA untuk operasi berikutnya
+  }
+
+  // ────────────────────────────────────────────────────────────────────────────
+  // Auth
+  // ────────────────────────────────────────────────────────────────────────────
+  async function verifyToken(token) {
+    ghToken = token;
+    try {
+      await loadFile();
+      return true;
+    } catch {
+      ghToken = '';
+      return false;
+    }
+  }
+
+  function showDashboard() {
+    screenToken.style.display = 'none';
+    screenDash.style.display  = 'block';
+  }
+
+  function showTokenScreen() {
+    screenToken.style.display = 'flex';
+    screenDash.style.display  = 'none';
+    localStorage.removeItem(TOKEN_KEY);
+    ghToken = '';
+  }
+
+  btnVerify.addEventListener('click', async () => {
+    const token = tokenInput.value.trim();
+    if (!token) return;
+    tokenError.style.display = 'none';
+    btnVerify.disabled = true;
+    btnVerify.textContent = 'Memverifikasi...';
+    const ok = await verifyToken(token);
+    if (ok) {
+      localStorage.setItem(TOKEN_KEY, token);
+      showDashboard();
+      renderList();
+    } else {
+      tokenError.style.display = 'block';
+    }
+    btnVerify.disabled = false;
+    btnVerify.textContent = '✓ Verifikasi & Masuk';
+  });
+
+  tokenInput.addEventListener('keydown', e => { if (e.key === 'Enter') btnVerify.click(); });
+
+  btnLogout.addEventListener('click', () => {
+    if (confirm('Keluar dari admin panel?')) showTokenScreen();
+  });
+
+  // ────────────────────────────────────────────────────────────────────────────
+  // Render project list
+  // ────────────────────────────────────────────────────────────────────────────
+  function renderList() {
+    const sorted = [...projects].sort((a, b) => (a.order || 0) - (b.order || 0));
+    countPill.textContent = `📁 ${projects.length} project`;
+
+    if (projects.length === 0) {
+      projectsList.innerHTML = `
+        <div class="empty-state">
+          <div class="icon">🎬</div>
+          <p>Belum ada project. Klik <strong>+ Tambah Project</strong> untuk memulai.</p>
+        </div>`;
+      return;
+    }
+
+    projectsList.innerHTML = sorted.map(p => `
+      <div class="project-card" data-id="${p.id}">
+        <div class="card-video-wrap ${p.orientation === 'portrait' ? 'portrait' : ''}">
+          <video src="${p.videoUrl}" muted loop playsinline
+            onmouseenter="this.play()" onmouseleave="this.pause();this.currentTime=0"
+          ></video>
+          <span class="badge">${p.orientation === 'portrait' ? '📱 Portrait' : '🖥 Landscape'}</span>
+        </div>
+        <div class="card-body">
+          <div class="card-meta">
+            <span class="pill">Kolom ${p.column}</span>
+            <span class="pill card-order">⬆ Order ${p.order}</span>
+          </div>
+          <h3>${escHtml(p.title)}</h3>
+          <p>${escHtml(p.description)}</p>
+          <div class="card-actions">
+            <button class="btn btn-sm" onclick="openEditModal('${p.id}')">✏️ Edit</button>
+            <button class="btn btn-sm btn-danger" onclick="openDeleteModal('${p.id}')">🗑 Hapus</button>
+          </div>
+        </div>
+      </div>`).join('');
+  }
+
+  function escHtml(str) {
+    return String(str)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
+  // ────────────────────────────────────────────────────────────────────────────
+  // Alerts
+  // ────────────────────────────────────────────────────────────────────────────
+  let alertTimer;
+  function showAlert(type, msg) {
+    clearTimeout(alertTimer);
+    [alertSuccess, alertError].forEach(el => el.classList.remove('show'));
+    if (type === 'success') { alertSuccessT.textContent = msg; alertSuccess.classList.add('show'); }
+    else { alertErrorT.textContent = msg; alertError.classList.add('show'); }
+    alertTimer = setTimeout(() => [alertSuccess, alertError].forEach(el => el.classList.remove('show')), 6000);
+  }
+
+  // ────────────────────────────────────────────────────────────────────────────
+  // Add / Edit Modal
+  // ────────────────────────────────────────────────────────────────────────────
+  btnAdd.addEventListener('click', () => openAddModal());
+
+  function openAddModal() {
+    editingId = null;
+    modalTitle.textContent = 'Tambah Project Baru';
+    editId.value = '';
+    fieldTitle.value = '';
+    fieldDesc.value  = '';
+    fieldVideo.value = '';
+    fieldColumn.value = '1';
+    fieldOrder.value  = (Math.max(0, ...projects.map(p => p.order || 0)) + 1);
+    document.querySelector('input[name="orientation"][value="landscape"]').checked = true;
+    modalProject.classList.add('open');
+    fieldTitle.focus();
+  }
+
+  function openEditModal(id) {
+    const p = projects.find(x => x.id === id);
+    if (!p) return;
+    editingId = id;
+    modalTitle.textContent = 'Edit Project';
+    editId.value     = p.id;
+    fieldTitle.value = p.title;
+    fieldDesc.value  = p.description;
+    fieldVideo.value = p.videoUrl;
+    fieldColumn.value = String(p.column);
+    fieldOrder.value  = p.order;
+    const radio = document.querySelector(`input[name="orientation"][value="${p.orientation}"]`);
+    if (radio) radio.checked = true;
+    modalProject.classList.add('open');
+    fieldTitle.focus();
+  }
+
+  function closeProjectModal() { modalProject.classList.remove('open'); }
+  btnModalClose.addEventListener('click', closeProjectModal);
+  btnCancelEdit.addEventListener('click', closeProjectModal);
+  modalProject.addEventListener('click', e => { if (e.target === modalProject) closeProjectModal(); });
+
+  btnSaveProject.addEventListener('click', async () => {
+    const title = fieldTitle.value.trim();
+    const desc  = fieldDesc.value.trim();
+    const video = fieldVideo.value.trim();
+    const col   = parseInt(fieldColumn.value, 10) || 1;
+    const order = parseInt(fieldOrder.value,  10) || 1;
+    const orient = document.querySelector('input[name="orientation"]:checked')?.value || 'landscape';
+
+    if (!title || !desc || !video) {
+      showAlert('error', 'Judul, deskripsi, dan URL video wajib diisi!');
+      return;
+    }
+
+    closeProjectModal();
+    savingOverlay.classList.add('show');
+
+    try {
+      // Reload untuk dapat SHA terbaru (hindari konflik)
+      projects = await loadFile();
+
+      if (editingId) {
+        // Edit existing
+        const idx = projects.findIndex(p => p.id === editingId);
+        if (idx !== -1) {
+          projects[idx] = { ...projects[idx], title, description: desc, videoUrl: video, orientation: orient, column: col, order, updatedAt: new Date().toISOString() };
+        }
+        await saveFile(projects, `✏️ Edit project: ${title}`);
+        showAlert('success', `Project "${title}" berhasil diperbarui! Vercel sedang redeploy...`);
+      } else {
+        // Add new
+        const newProject = {
+          id: title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') + '-' + Date.now().toString(36),
+          title, description: desc, videoUrl: video, orientation: orient, column: col, order,
+          createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
+        };
+        projects.push(newProject);
+        await saveFile(projects, `✨ Tambah project: ${title}`);
+        showAlert('success', `Project "${title}" berhasil ditambahkan! Vercel sedang redeploy...`);
+      }
+
+      renderList();
+    } catch (err) {
+      showAlert('error', `Gagal menyimpan: ${err.message}`);
+    } finally {
+      savingOverlay.classList.remove('show');
+    }
+  });
+
+  // ────────────────────────────────────────────────────────────────────────────
+  // Delete Modal
+  // ────────────────────────────────────────────────────────────────────────────
+  function openDeleteModal(id) {
+    deleteId = id;
+    const p = projects.find(x => x.id === id);
+    deleteNameEl.textContent = p ? p.title : id;
+    modalDelete.classList.add('open');
+  }
+
+  function closeDeleteModal() { modalDelete.classList.remove('open'); deleteId = null; }
+  btnCancelDel.addEventListener('click', closeDeleteModal);
+  modalDelete.addEventListener('click', e => { if (e.target === modalDelete) closeDeleteModal(); });
+
+  btnConfirmDel.addEventListener('click', async () => {
+    if (!deleteId) return;
+    const p = projects.find(x => x.id === deleteId);
+    closeDeleteModal();
+    savingOverlay.classList.add('show');
+
+    try {
+      projects = await loadFile();
+      projects = projects.filter(x => x.id !== deleteId);
+      await saveFile(projects, `🗑️ Hapus project: ${p?.title || deleteId}`);
+      showAlert('success', `Project "${p?.title}" berhasil dihapus!`);
+      renderList();
+    } catch (err) {
+      showAlert('error', `Gagal menghapus: ${err.message}`);
+    } finally {
+      savingOverlay.classList.remove('show');
+    }
+  });
+
+  // ────────────────────────────────────────────────────────────────────────────
+  // Init
+  // ────────────────────────────────────────────────────────────────────────────
+  async function init() {
+    const saved = localStorage.getItem(TOKEN_KEY);
+    if (saved) {
+      const ok = await verifyToken(saved);
+      if (ok) {
+        showDashboard();
+        projects = await loadFile();
+        renderList();
+        return;
+      }
+    }
+    showTokenScreen();
+  }
+
+  init();
+</script>
+</body>
+</html>

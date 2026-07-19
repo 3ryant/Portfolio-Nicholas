@@ -40,10 +40,10 @@
     "title": "tester video",
     "description": "ini untuk tes upload project",
     "videoUrl": "tester.mp4",
-    "orientation": "landscape",
+    "orientation": "portrait",
     "column": 1,
     "order": 5,
     "createdAt": "2026-07-19T10:35:43.306Z",
-    "updatedAt": "2026-07-19T10:37:12.876Z"
+    "updatedAt": "2026-07-19T11:18:52.626Z"
   }
 ]

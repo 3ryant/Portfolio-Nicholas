@@ -1369,20 +1369,31 @@
                     const tw = document.getElementById('typewriter-text');
                     if (tw && about.bio) tw.setAttribute('data-text', about.bio);
 
-                    // Update skills
-                    if (about.skills && about.skills.length > 0) {
+                    // Update skills — rebuild penuh dari JSON agar selalu sync
+                    if (about.skills) {
                         const skillsContainer = document.querySelector('.skill-icons');
                         if (skillsContainer) {
-                            const wrappers = skillsContainer.querySelectorAll('.skill-icon-wrapper');
+                            skillsContainer.innerHTML = '';   // bersihkan ikon lama
                             about.skills.forEach((skill, i) => {
-                                if (wrappers[i]) {
-                                    const img = wrappers[i].querySelector('img');
-                                    if (img) {
-                                        img.src   = skill.icon;
-                                        img.alt   = skill.name;
-                                        img.title = skill.name;
-                                    }
-                                }
+                                const wrapper = document.createElement('div');
+                                wrapper.className = 'skill-icon-wrapper';
+                                wrapper.id = 'skill-dyn-' + i;
+                                const img = document.createElement('img');
+                                img.src     = skill.icon;
+                                img.alt     = skill.name;
+                                img.title   = skill.name;
+                                img.loading = 'lazy';
+                                const lbl = document.createElement('span');
+                                lbl.className   = 'icon-label';
+                                lbl.textContent = 'Drag';
+                                wrapper.appendChild(img);
+                                wrapper.appendChild(lbl);
+                                skillsContainer.appendChild(wrapper);
+                                // makeDraggable di-hoist dalam scope ini — aman dipanggil
+                                makeDraggable(wrapper, lbl, skill.name);
+                                // cursor hover
+                                wrapper.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+                                wrapper.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
                             });
                         }
                     }
@@ -1621,15 +1632,17 @@
                 document.addEventListener('touchend',   onEnd);
             }
 
+            // Drag untuk skill icons — disetup loadAbout() secara dinamis.
+            // Loop ini hanya sebagai fallback jika about.json belum ter-fetch
+            // (misalnya fetch sangat lambat atau gagal).
             const iconMeta = [
                 { id: 'icon-photoshop', name: 'Photoshop' },
                 { id: 'icon-capcut',    name: 'CapCut' },
                 { id: 'icon-canva',     name: 'Canva' },
             ];
-
             iconMeta.forEach(({ id, name }) => {
                 const el = document.getElementById(id);
-                if (!el) return;
+                if (!el) return;   // sudah di-replace oleh loadAbout() → skip
                 const label = el.querySelector('.icon-label');
                 makeDraggable(el, label, name);
             });

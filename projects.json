@@ -34,16 +34,5 @@
     "orientation": "portrait",
     "column": 3,
     "order": 4
-  },
-  {
-    "id": "tester-video-mrrntu8a",
-    "title": "tester video",
-    "description": "ini untuk tes upload project",
-    "videoUrl": "dasda",
-    "orientation": "landscape",
-    "column": 1,
-    "order": 5,
-    "createdAt": "2026-07-19T10:35:43.306Z",
-    "updatedAt": "2026-07-19T11:57:05.735Z"
   }
 ]

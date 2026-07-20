@@ -259,6 +259,45 @@
       .token-card { padding: 28px 20px; }
     }
 
+    /* ── Upload UI ── */
+    .field-with-upload {
+      display: flex; gap: 8px; align-items: stretch;
+    }
+    .field-with-upload .form-control { flex: 1; min-width: 0; }
+    .upload-btn-label {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 0 14px; height: 42px; border-radius: 10px; flex-shrink: 0;
+      border: 1px dashed rgba(79,195,247,0.4); background: rgba(79,195,247,0.06);
+      color: var(--accent); font-weight: 600; font-size: 0.82rem;
+      cursor: pointer; transition: all 0.18s ease; white-space: nowrap;
+    }
+    .upload-btn-label:hover { border-color: var(--accent); background: rgba(79,195,247,0.14); }
+    .upload-btn-label.uploading {
+      color: var(--warn); border-color: rgba(255,211,107,0.4);
+      background: rgba(255,211,107,0.06); cursor: not-allowed;
+    }
+    .upload-progress {
+      display: none; margin-top: 6px;
+      background: rgba(255,255,255,0.05); border-radius: 99px;
+      height: 4px; overflow: hidden;
+    }
+    .upload-progress.show { display: block; }
+    .upload-progress-bar {
+      height: 100%; width: 0%; border-radius: 99px;
+      background: linear-gradient(90deg, var(--accent), #a8e6ff);
+      transition: width 0.3s ease;
+    }
+    .skill-row .upload-icon-label {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 38px; height: 38px; border-radius: 8px; flex-shrink: 0;
+      border: 1px dashed rgba(79,195,247,0.35); background: rgba(79,195,247,0.05);
+      color: var(--accent); font-size: 1rem; cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .skill-row .upload-icon-label:hover { border-color: var(--accent); background: rgba(79,195,247,0.12); }
+    .skill-row .upload-icon-label.uploading { color: var(--warn); border-color: rgba(255,211,107,0.4); cursor: not-allowed; }
+
+
     /* ── Tab navigation ── */
     .tab-nav {
       display: flex; gap: 4px; margin-bottom: 32px;
@@ -476,9 +515,18 @@
         <textarea id="field-desc" class="form-control" placeholder="Deskripsi singkat project..." maxlength="350" rows="3"></textarea>
       </div>
       <div class="form-group">
-        <label>URL Video *</label>
-        <input type="text" id="field-video" class="form-control" placeholder="mobil.mp4  atau  https://...">
-        <small>Nama file video (jika ada di repo yang sama) atau URL lengkap</small>
+        <label>Video *</label>
+        <div class="field-with-upload">
+          <input type="text" id="field-video" class="form-control" placeholder="mobil.mp4  atau  https://...">
+          <label class="upload-btn-label" id="upload-video-label" title="Upload file video langsung ke repo">
+            📁 Upload Video
+            <input type="file" id="upload-video-input" accept="video/*" style="display:none">
+          </label>
+        </div>
+        <div class="upload-progress" id="upload-video-progress">
+          <div class="upload-progress-bar" id="upload-video-bar"></div>
+        </div>
+        <small id="upload-video-status">Ketik nama file / URL, atau klik Upload untuk pilih file langsung</small>
       </div>
       <div class="form-row">
         <div class="form-group">
@@ -927,15 +975,48 @@
       row.innerHTML = `
         <img class="skill-preview" id="skill-preview-${idx}" src="${skill.icon || ''}" alt="${skill.name || ''}" onerror="this.src='data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\'><rect width=\'40\' height=\'40\' fill=\'%23111\'/></svg>'">
         <input class="form-control" type="text" placeholder="Nama skill" value="${escHtml(skill.name || '')}" data-field="name" data-idx="${idx}">
-        <input class="form-control" type="text" placeholder="photoshop.png atau https://..." value="${escHtml(skill.icon || '')}" data-field="icon" data-idx="${idx}" style="max-width:220px">
+        <input class="form-control" type="text" placeholder="icon.png atau https://..." value="${escHtml(skill.icon || '')}" data-field="icon" data-idx="${idx}" style="max-width:180px">
+        <label class="upload-icon-label" title="Upload gambar ikon">
+          📁
+          <input type="file" accept="image/*" data-upload-icon="${idx}" style="display:none">
+        </label>
         <button class="btn btn-sm btn-danger" onclick="removeSkill(${idx})">🗑</button>`;
       container.appendChild(row);
     });
-    // Live preview on icon input
+
+    // Live preview on icon URL input
     container.querySelectorAll('input[data-field="icon"]').forEach(input => {
       input.addEventListener('input', () => {
         const prev = document.getElementById(`skill-preview-${input.dataset.idx}`);
         if (prev) prev.src = input.value;
+      });
+    });
+
+    // Upload icon file for each skill row
+    container.querySelectorAll('input[data-upload-icon]').forEach(fileInput => {
+      fileInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const idx = fileInput.dataset.uploadIcon;
+        const label = fileInput.closest('.upload-icon-label');
+        const iconInput = container.querySelector(`input[data-field="icon"][data-idx="${idx}"]`);
+        const preview  = document.getElementById(`skill-preview-${idx}`);
+        label.classList.add('uploading');
+        label.textContent = '⏳';
+        try {
+          const fileName = await uploadToGitHub(file);
+          iconInput.value = fileName;
+          if (preview) preview.src = fileName;
+          showAlert('success', `Ikon "${fileName}" berhasil diupload!`);
+        } catch (err) {
+          showAlert('error', `Upload ikon gagal: ${err.message}`);
+        } finally {
+          label.classList.remove('uploading');
+          label.innerHTML = '📁<input type="file" accept="image/*" data-upload-icon="' + idx + '" style="display:none">';
+          // Re-bind for next use
+          label.querySelector('input').addEventListener('change', fileInput.onchange);
+        }
+        e.target.value = '';
       });
     });
   }
@@ -1010,6 +1091,112 @@
     aboutData = null;
     loadAboutData();
   });
+
+  // ────────────────────────────────────────────────────────────────────────────
+  // File Upload ke GitHub (browser → GitHub API → repo → Vercel)
+  // ────────────────────────────────────────────────────────────────────────────
+
+  /**
+   * Baca file sebagai base64 string (tanpa prefix data:...;base64,)
+   */
+  function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload  = () => resolve(reader.result.split(',')[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  /**
+   * Upload file ke root repo GitHub.
+   * @param {File} file  - File yang dipilih user
+   * @param {Function} onProgress - callback(pct 0-100)
+   * @returns {string} nama file (misal: "video.mp4")
+   */
+  async function uploadToGitHub(file, onProgress) {
+    const MAX_MB = 95;
+    if (file.size > MAX_MB * 1024 * 1024) {
+      throw new Error(`File terlalu besar (${(file.size/1024/1024).toFixed(1)} MB). Maksimal ${MAX_MB} MB.`);
+    }
+
+    onProgress?.(10);  // Mulai baca file
+    const base64 = await fileToBase64(file);
+    onProgress?.(40);  // Selesai baca, mulai upload
+
+    const fileName   = file.name;
+    const remotePath = fileName; // Simpan di root repo (sama seperti file video lainnya)
+
+    // Cek apakah file sudah ada (butuh SHA untuk update)
+    const checkRes = await ghFetch(`/repos/${REPO}/contents/${encodeURIComponent(remotePath)}?ref=${BRANCH}`);
+    const sha = checkRes.ok ? (await checkRes.json()).sha : null;
+
+    onProgress?.(60);  // SHA di-dapat, kirim file
+
+    const body = {
+      message : sha ? `update: ${fileName}` : `upload: ${fileName}`,
+      content : base64,
+      branch  : BRANCH,
+      ...(sha ? { sha } : {})
+    };
+
+    const putRes = await ghFetch(`/repos/${REPO}/contents/${encodeURIComponent(remotePath)}`, {
+      method: 'PUT',
+      body  : JSON.stringify(body)
+    });
+
+    onProgress?.(95);
+
+    if (!putRes.ok) {
+      const err = await putRes.json();
+      throw new Error(err.message || `GitHub API ${putRes.status}`);
+    }
+
+    onProgress?.(100);
+    return fileName; // kembalikan nama file untuk dipakai di field URL
+  }
+
+  // ── Wire-up: Upload Video untuk Project Modal ──
+  (function setupVideoUpload() {
+    const input    = document.getElementById('upload-video-input');
+    const label    = document.getElementById('upload-video-label');
+    const fieldUrl = document.getElementById('field-video');
+    const progress = document.getElementById('upload-video-progress');
+    const bar      = document.getElementById('upload-video-bar');
+    const status   = document.getElementById('upload-video-status');
+
+    input.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      // UI: lock
+      label.classList.add('uploading');
+      label.childNodes[0].textContent = '⏳ Uploading… ';
+      progress.classList.add('show');
+      bar.style.width = '0%';
+      status.textContent = `Mengupload ${file.name} (${(file.size/1024/1024).toFixed(1)} MB)…`;
+      document.getElementById('btn-save-project').disabled = true;
+
+      try {
+        const fileName = await uploadToGitHub(file, (pct) => {
+          bar.style.width = pct + '%';
+        });
+        fieldUrl.value   = fileName;
+        status.textContent = `✅ "${fileName}" berhasil diupload! Vercel akan redeploy otomatis.`;
+        showAlert('success', `File "${fileName}" diupload ke repo!`);
+      } catch (err) {
+        status.textContent = `❌ Gagal: ${err.message}`;
+        showAlert('error', `Upload video gagal: ${err.message}`);
+      } finally {
+        label.classList.remove('uploading');
+        label.childNodes[0].textContent = '📁 Upload Video ';
+        progress.classList.remove('show');
+        bar.style.width = '0%';
+        document.getElementById('btn-save-project').disabled = false;
+        input.value = '';
+      }
+    });
+  })();
 
   // ────────────────────────────────────────────────────────────────────────────
   // Init

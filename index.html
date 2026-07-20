@@ -596,7 +596,7 @@
             <div class="about-image" style="flex: 0 0 350px; perspective: 1000px; z-index: 10;">
                 <div class="photo-drag-wrapper" id="photo-drag-wrapper">
                     <img src="Nicholas Bryant.jpeg" alt="Nicholas Bryant" class="draggable-img" id="draggable-photo">
-                    <span class="photo-drag-label">Nicholas Bryant Wihardjo</span>
+                    <span class="photo-drag-label" id="about-name-label">Nicholas Bryant Wihardjo</span>
                 </div>
                 <div class="drag-hint">✦ Drag Picture</div>
             </div>
@@ -1352,6 +1352,48 @@
             // Jalankan saat DOM siap
             loadProjects();
 
+            /**
+             * Ambil data About Me dari /about.json dan update DOM.
+             */
+            async function loadAbout() {
+                try {
+                    const res = await fetch('/about.json?v=' + Date.now(), { cache: 'no-store' });
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    const about = await res.json();
+
+                    // Update nama di label foto About section
+                    const nameLabel = document.getElementById('about-name-label');
+                    if (nameLabel && about.name) nameLabel.textContent = about.name;
+
+                    // Update bio (data-text dipakai typewriter saat observer trigger)
+                    const tw = document.getElementById('typewriter-text');
+                    if (tw && about.bio) tw.setAttribute('data-text', about.bio);
+
+                    // Update skills
+                    if (about.skills && about.skills.length > 0) {
+                        const skillsContainer = document.querySelector('.skill-icons');
+                        if (skillsContainer) {
+                            const wrappers = skillsContainer.querySelectorAll('.skill-icon-wrapper');
+                            about.skills.forEach((skill, i) => {
+                                if (wrappers[i]) {
+                                    const img = wrappers[i].querySelector('img');
+                                    if (img) {
+                                        img.src   = skill.icon;
+                                        img.alt   = skill.name;
+                                        img.title = skill.name;
+                                    }
+                                }
+                            });
+                        }
+                    }
+                } catch (err) {
+                    console.warn('[About] Gagal load about.json, pakai data default.', err.message);
+                }
+            }
+
+            // Jalankan loadAbout sejak awal agar data sudah siap sebelum user scroll
+            loadAbout();
+
             // ═══════════════════════════════════════════════════════════════════
             // Script Hover Suara Video (untuk video yang sudah ada di DOM)
             // ═══════════════════════════════════════════════════════════════════
@@ -1433,7 +1475,8 @@
             const reveals = document.querySelectorAll('.reveal');
             const typewriterElement = document.getElementById('typewriter-text');
             const aboutTextContainer = document.getElementById('about-text-container');
-            const textToType = typewriterElement.getAttribute('data-text');
+            // textToType dibaca SAAT observer trigger (bukan saat page load)
+            // agar loadAbout() sempat update data-text lebih dulu.
             
             let isTypingStarted = false;
 
@@ -1450,7 +1493,8 @@
                             if (!isTypingStarted) {
                                 isTypingStarted = true;
                                 typewriterElement.classList.add('typing-cursor');
-                                
+                                // Baca data-text SEKARANG — sudah diupdate oleh loadAbout()
+                                const textToType = typewriterElement.getAttribute('data-text');
                                 let i = 0;
                                 function typeWriter() {
                                     if (i < textToType.length) {

@@ -2,8 +2,17 @@
   "name": "Nicholas Bryant Wihardjo",
   "bio": "Halo, saya Nicholas Bryant Wihardjo. Saya memiliki hobi dalam video editing, saya sering melakukan edit video tugas sekolah hingga membantu editing beberapa video untuk perusahaan dimana saya magang. Dalam proses pembuatan video saya sering menggunakan tools seperti capcut pro & photoshop. Dan saya terbiasa juga untuk mengerjakan proyek-proyek yang mendapatkan revisi, jadi saya tidak takut untuk video saya di minta revisi untuk berkembang lebih lagi.",
   "skills": [
-    { "name": "Adobe Photoshop", "icon": "photoshop.png" },
-    { "name": "CapCut Pro", "icon": "logo capcut.jpg" },
-    { "name": "Canva", "icon": "logo canva.avif" }
+    {
+      "name": "Adobe Photoshop",
+      "icon": "photoshop.png"
+    },
+    {
+      "name": "CapCut Pro",
+      "icon": "logo capcut.jpg"
+    },
+    {
+      "name": "Canva",
+      "icon": "logo canva.avif"
+    }
   ]
 }

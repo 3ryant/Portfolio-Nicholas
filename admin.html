@@ -258,6 +258,65 @@
       .topbar { flex-wrap: wrap; }
       .token-card { padding: 28px 20px; }
     }
+
+    /* ── Tab navigation ── */
+    .tab-nav {
+      display: flex; gap: 4px; margin-bottom: 32px;
+      background: rgba(255,255,255,0.03); border: 1px solid var(--line);
+      border-radius: 14px; padding: 5px;
+    }
+    .tab-btn {
+      flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 10px 18px; border-radius: 10px; border: none;
+      background: transparent; color: var(--muted); font-weight: 600; font-size: 0.88rem;
+      transition: all 0.18s ease; cursor: pointer;
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(79,195,247,0.18), rgba(79,195,247,0.08));
+      color: var(--accent); border: 1px solid rgba(79,195,247,0.3);
+    }
+    .tab-btn:hover:not(.active) { color: var(--text); background: rgba(255,255,255,0.05); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── About Me editor ── */
+    .about-card {
+      background: var(--panel); border: 1px solid var(--line);
+      border-radius: 20px; padding: 28px; backdrop-filter: blur(12px);
+      box-shadow: 0 16px 50px rgba(0,0,0,0.25); margin-bottom: 20px;
+    }
+    .about-card h3 {
+      font-size: 1rem; font-weight: 700; margin-bottom: 6px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .about-card h3 span { font-size: 1.2rem; }
+    .about-card > p { color: var(--muted); font-size: 0.83rem; margin-bottom: 20px; }
+    .char-count { color: var(--muted); font-size: 0.77rem; text-align: right; margin-top: 4px; }
+
+    /* Skills editor */
+    .skill-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 14px; background: rgba(255,255,255,0.03);
+      border: 1px solid var(--line); border-radius: 12px; margin-bottom: 8px;
+      transition: border-color 0.15s;
+    }
+    .skill-row:hover { border-color: rgba(79,195,247,0.25); }
+    .skill-preview {
+      width: 40px; height: 40px; border-radius: 8px;
+      object-fit: contain; background: rgba(255,255,255,0.06);
+      border: 1px solid var(--line); flex-shrink: 0; padding: 4px;
+    }
+    .skill-row .form-control { flex: 1; margin: 0; height: 38px; }
+    .skill-row .btn { flex-shrink: 0; }
+    .btn-add-skill {
+      width: 100%; margin-top: 8px; justify-content: center;
+      border-style: dashed; color: var(--muted);
+    }
+    .btn-add-skill:hover { color: var(--accent); border-color: var(--accent); }
+    .about-save-bar {
+      display: flex; justify-content: flex-end; gap: 12px;
+      padding-top: 20px; border-top: 1px solid var(--line); margin-top: 24px;
+    }
   </style>
 </head>
 <body>
@@ -320,24 +379,82 @@
       <span id="alert-error-text"></span>
     </div>
 
-    <div class="section-head">
-      <div>
-        <h2>Recap Project</h2>
-        <p>Perubahan otomatis tampil di portfolio setelah Vercel redeploy (~30 detik)</p>
+    <!-- Tab Navigation -->
+    <div class="tab-nav">
+      <button class="tab-btn active" data-tab="tab-projects" id="btn-tab-projects">
+        🎬 Recap Project
+      </button>
+      <button class="tab-btn" data-tab="tab-about" id="btn-tab-about">
+        👤 About Me
+      </button>
+    </div>
+
+    <!-- TAB: RECAP PROJECT -->
+    <div class="tab-panel active" id="tab-projects">
+      <div class="section-head">
+        <div>
+          <h2>Recap Project</h2>
+          <p>Perubahan otomatis tampil di portfolio setelah Vercel redeploy (~30 detik)</p>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          <span class="pill pill-accent" id="project-count-pill">📁 0 project</span>
+          <button class="btn btn-primary" id="btn-add">+ Tambah Project</button>
+        </div>
       </div>
-      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-        <span class="pill pill-accent" id="project-count-pill">📁 0 project</span>
-        <button class="btn btn-primary" id="btn-add">+ Tambah Project</button>
+      <!-- Projects Grid -->
+      <div id="projects-list">
+        <div class="loading-state">
+          <div class="spinner"></div>
+          <p>Memuat project...</p>
+        </div>
       </div>
     </div>
 
-    <!-- Projects Grid -->
-    <div id="projects-list">
-      <div class="loading-state">
-        <div class="spinner"></div>
-        <p>Memuat project...</p>
+    <!-- TAB: ABOUT ME -->
+    <div class="tab-panel" id="tab-about">
+      <div class="section-head">
+        <div>
+          <h2>About Me</h2>
+          <p>Edit nama, bio, dan skills yang tampil di portfolio</p>
+        </div>
+        <button class="btn btn-primary" id="btn-save-about">💾 Simpan &amp; Publish</button>
+      </div>
+
+      <!-- Nama -->
+      <div class="about-card">
+        <h3><span>✏️</span> Nama</h3>
+        <p>Nama yang ditampilkan di bawah foto profil</p>
+        <div class="form-group">
+          <input type="text" id="about-name" class="form-control" placeholder="Nama lengkap kamu" maxlength="80">
+        </div>
+      </div>
+
+      <!-- Bio -->
+      <div class="about-card">
+        <h3><span>📝</span> Bio / Deskripsi</h3>
+        <p>Paragraf pengenalan diri dengan efek ketik otomatis di portfolio</p>
+        <div class="form-group">
+          <textarea id="about-bio" class="form-control" rows="6"
+            placeholder="Halo, saya..." maxlength="1000"
+            oninput="document.getElementById('bio-count').textContent = this.value.length"
+          ></textarea>
+          <div class="char-count"><span id="bio-count">0</span> / 1000 karakter</div>
+        </div>
+      </div>
+
+      <!-- Skills -->
+      <div class="about-card">
+        <h3><span>🛠️</span> Software Skills</h3>
+        <p>Ikon skill yang tampil di About Me. Masukkan nama file (misal: photoshop.png) atau URL lengkap.</p>
+        <div id="skills-editor"></div>
+        <button class="btn btn-add-skill" id="btn-add-skill">+ Tambah Skill</button>
+        <div class="about-save-bar">
+          <button class="btn" id="btn-reload-about">↺ Reset</button>
+          <button class="btn btn-primary" id="btn-save-about-2">💾 Simpan &amp; Publish</button>
+        </div>
       </div>
     </div>
+
   </div>
 </div>
 
@@ -428,8 +545,9 @@
   // ────────────────────────────────────────────────────────────────────────────
   // CONFIG — Sesuaikan jika repo berbeda
   // ────────────────────────────────────────────────────────────────────────────
-  const REPO      = '3ryant/Portfolio-Nicholas';
-  const FILE_PATH = 'projects.json';   // path dari root repo
+  const REPO           = '3ryant/Portfolio-Nicholas';
+  const FILE_PATH      = 'projects.json';   // path projects dari root repo
+  const FILE_PATH_ABOUT = 'about.json';     // path about me dari root repo
   const BRANCH    = 'main';            // ganti ke 'master' jika perlu
   const API_BASE  = 'https://api.github.com';
   const TOKEN_KEY = 'nbw_gh_token';    // localStorage key
@@ -439,8 +557,10 @@
   // ────────────────────────────────────────────────────────────────────────────
   let ghToken    = '';
   let projects   = [];
-  let fileSHA    = '';          // SHA dari file saat ini (dibutuhkan untuk update)
-  let editingId  = null;        // null = tambah baru
+  let fileSHA    = '';      // SHA projects.json
+  let aboutFileSHA = '';   // SHA about.json
+  let aboutData  = null;   // { name, bio, skills[] }
+  let editingId  = null;   // null = tambah baru
   let deleteId   = null;
 
   // ────────────────────────────────────────────────────────────────────────────
@@ -730,14 +850,15 @@
 
   btnConfirmDel.addEventListener('click', async () => {
     if (!deleteId) return;
-    const p = projects.find(x => x.id === deleteId);
+    const idToDelete = deleteId;                            // ← simpan sebelum closeDeleteModal set null
+    const p = projects.find(x => x.id === idToDelete);
     closeDeleteModal();
     savingOverlay.classList.add('show');
 
     try {
       projects = await loadFile();
-      projects = projects.filter(x => x.id !== deleteId);
-      await saveFile(projects, `🗑️ Hapus project: ${p?.title || deleteId}`);
+      projects = projects.filter(x => x.id !== idToDelete); // ← pakai idToDelete, bukan deleteId
+      await saveFile(projects, `🗑️ Hapus project: ${p?.title || idToDelete}`);
       showAlert('success', `Project "${p?.title}" berhasil dihapus!`);
       renderList();
     } catch (err) {
@@ -745,6 +866,146 @@
     } finally {
       savingOverlay.classList.remove('show');
     }
+  });
+
+
+  // ────────────────────────────────────────────────────────────────────────────
+  // Tab Switching
+  // ────────────────────────────────────────────────────────────────────────────
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+      // Load about data when switching to about tab
+      if (btn.dataset.tab === 'tab-about' && !aboutData) loadAboutData();
+    });
+  });
+
+  // ────────────────────────────────────────────────────────────────────────────
+  // About Me — GitHub API helpers
+  // ────────────────────────────────────────────────────────────────────────────
+  async function loadAboutFile() {
+    const res = await ghFetch(`/repos/${REPO}/contents/${FILE_PATH_ABOUT}?ref=${BRANCH}`);
+    if (res.status === 404) {
+      aboutFileSHA = '';
+      return { name: '', bio: '', skills: [] };
+    }
+    if (!res.ok && res.status !== 200) throw new Error(`GitHub API ${res.status}`);
+    const data = res.body;
+    aboutFileSHA = data.sha;
+    return JSON.parse(atob(data.content.replace(/\n/g, '')));
+  }
+
+  async function saveAboutFile(newAbout, message) {
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(newAbout, null, 2) + '\n')));
+    const body = { message, content, branch: BRANCH };
+    if (aboutFileSHA) body.sha = aboutFileSHA;
+    const res = await ghFetch(`/repos/${REPO}/contents/${FILE_PATH_ABOUT}`, {
+      method: 'PUT',
+      body: JSON.stringify(body)
+    });
+    if (res.status !== 200 && res.status !== 201) {
+      throw new Error(res.body?.message || `GitHub API ${res.status}`);
+    }
+    aboutFileSHA = res.body.content.sha;
+  }
+
+  // ────────────────────────────────────────────────────────────────────────────
+  // About Me — Render skills editor
+  // ────────────────────────────────────────────────────────────────────────────
+  function renderSkillsEditor(skills) {
+    const container = document.getElementById('skills-editor');
+    container.innerHTML = '';
+    (skills || []).forEach((skill, idx) => {
+      const row = document.createElement('div');
+      row.className = 'skill-row';
+      row.innerHTML = `
+        <img class="skill-preview" id="skill-preview-${idx}" src="${skill.icon || ''}" alt="${skill.name || ''}" onerror="this.src='data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\'><rect width=\'40\' height=\'40\' fill=\'%23111\'/></svg>'">
+        <input class="form-control" type="text" placeholder="Nama skill" value="${escHtml(skill.name || '')}" data-field="name" data-idx="${idx}">
+        <input class="form-control" type="text" placeholder="photoshop.png atau https://..." value="${escHtml(skill.icon || '')}" data-field="icon" data-idx="${idx}" style="max-width:220px">
+        <button class="btn btn-sm btn-danger" onclick="removeSkill(${idx})">🗑</button>`;
+      container.appendChild(row);
+    });
+    // Live preview on icon input
+    container.querySelectorAll('input[data-field="icon"]').forEach(input => {
+      input.addEventListener('input', () => {
+        const prev = document.getElementById(`skill-preview-${input.dataset.idx}`);
+        if (prev) prev.src = input.value;
+      });
+    });
+  }
+
+  function getSkillsFromEditor() {
+    const rows = document.querySelectorAll('#skills-editor .skill-row');
+    const skills = [];
+    rows.forEach(row => {
+      const name = row.querySelector('input[data-field="name"]')?.value.trim() || '';
+      const icon = row.querySelector('input[data-field="icon"]')?.value.trim() || '';
+      if (name || icon) skills.push({ name, icon });
+    });
+    return skills;
+  }
+
+  window.removeSkill = function(idx) {
+    const skills = getSkillsFromEditor();
+    skills.splice(idx, 1);
+    renderSkillsEditor(skills);
+  };
+
+  document.getElementById('btn-add-skill').addEventListener('click', () => {
+    const skills = getSkillsFromEditor();
+    skills.push({ name: '', icon: '' });
+    renderSkillsEditor(skills);
+  });
+
+  // ────────────────────────────────────────────────────────────────────────────
+  // About Me — Load & Save
+  // ────────────────────────────────────────────────────────────────────────────
+  async function loadAboutData() {
+    try {
+      aboutData = await loadAboutFile();
+      document.getElementById('about-name').value = aboutData.name || '';
+      document.getElementById('about-bio').value  = aboutData.bio  || '';
+      document.getElementById('bio-count').textContent = (aboutData.bio || '').length;
+      renderSkillsEditor(aboutData.skills || []);
+    } catch (err) {
+      showAlert('error', 'Gagal memuat data About Me: ' + err.message);
+    }
+  }
+
+  async function saveAboutData() {
+    const name   = document.getElementById('about-name').value.trim();
+    const bio    = document.getElementById('about-bio').value.trim();
+    const skills = getSkillsFromEditor();
+
+    if (!name || !bio) {
+      showAlert('error', 'Nama dan bio tidak boleh kosong!');
+      return;
+    }
+
+    savingOverlay.classList.add('show');
+    try {
+      // Reload SHA terbaru sebelum simpan
+      const fresh = await loadAboutFile();
+      const newAbout = { name, bio, skills };
+      await saveAboutFile(newAbout, '✏️ Update about me');
+      aboutData = newAbout;
+      showAlert('success', 'About Me berhasil disimpan! Vercel sedang redeploy...');
+    } catch (err) {
+      showAlert('error', 'Gagal menyimpan: ' + err.message);
+    } finally {
+      savingOverlay.classList.remove('show');
+    }
+  }
+
+  // Wire up save buttons
+  document.getElementById('btn-save-about').addEventListener('click', saveAboutData);
+  document.getElementById('btn-save-about-2').addEventListener('click', saveAboutData);
+  document.getElementById('btn-reload-about').addEventListener('click', () => {
+    aboutData = null;
+    loadAboutData();
   });
 
   // ────────────────────────────────────────────────────────────────────────────

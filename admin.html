@@ -708,7 +708,7 @@
   function showTokenScreen() {
     screenToken.style.display = 'flex';
     screenDash.style.display  = 'none';
-    localStorage.removeItem(TOKEN_KEY);
+    sessionStorage.removeItem(TOKEN_KEY);
     ghToken = '';
   }
 
@@ -720,7 +720,7 @@
     btnVerify.textContent = 'Memverifikasi...';
     const ok = await verifyToken(token);
     if (ok) {
-      localStorage.setItem(TOKEN_KEY, token);
+      sessionStorage.setItem(TOKEN_KEY, token);
       showDashboard();
       renderList();
     } else {
@@ -1202,7 +1202,7 @@
   // Init
   // ────────────────────────────────────────────────────────────────────────────
   async function init() {
-    const saved = localStorage.getItem(TOKEN_KEY);
+    const saved = sessionStorage.getItem(TOKEN_KEY);
     if (saved) {
       const ok = await verifyToken(saved);
       if (ok) {

@@ -1337,9 +1337,7 @@
              */
             async function loadProjects() {
                 try {
-                    const res = await fetch('/projects.json?v=' + Date.now(), {
-                        cache: 'no-store'
-                    });
+                    const res = await fetch('/projects.json', { cache: 'no-store' });
                     if (!res.ok) throw new Error(`HTTP ${res.status}`);
                     const projects = await res.json();
                     renderProjects(projects);
@@ -1357,7 +1355,7 @@
              */
             async function loadAbout() {
                 try {
-                    const res = await fetch('/about.json?v=' + Date.now(), { cache: 'no-store' });
+                    const res = await fetch('/about.json', { cache: 'no-store' });
                     if (!res.ok) throw new Error('HTTP ' + res.status);
                     const about = await res.json();
 
@@ -1405,26 +1403,7 @@
             // Jalankan loadAbout sejak awal agar data sudah siap sebelum user scroll
             loadAbout();
 
-            // ═══════════════════════════════════════════════════════════════════
-            // Script Hover Suara Video (untuk video yang sudah ada di DOM)
-            // ═══════════════════════════════════════════════════════════════════
-            // Catatan: Video yang di-render dinamis oleh loadProjects() sudah
-            // dipasangi listener di dalam renderProjects(), jadi tidak perlu
-            // querySelectorAll ulang di sini.
-            const videos = document.querySelectorAll('.hover-video');
-            videos.forEach(video => {
-                video.addEventListener('mouseenter', () => {
-                    video.muted = false; 
-                    video.play().catch(error => {
-                        video.muted = true;
-                        video.play();
-                    });
-                });
-                video.addEventListener('mouseleave', () => {
-                    video.pause();
-                    video.muted = true; 
-                });
-            });
+
 
             // LOGIKA DRAG & DROP FOTO
             const dragImg         = document.getElementById('draggable-photo');
